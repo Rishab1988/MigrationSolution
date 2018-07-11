@@ -4,6 +4,11 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.0\Migration.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Folder Include="RewardProgram\" />
     <Folder Include="wwwroot\" />
@@ -14,6 +19,8 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="3.0.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
   </ItemGroup>
 
   <ItemGroup>

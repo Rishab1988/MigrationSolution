@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Migration.Controllers
@@ -15,9 +16,16 @@ namespace Migration.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
+         
             var user = HttpContext.User;
-            var phone = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.MobilePhone);
-            return new string[] { "value1", "value2" };
+            var value = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.MobilePhone);
+            if (value != null)
+            {
+                var phone = value;
+            }
+
+            //HttpContext.Session = phone;
+            return new string[] { user.Identity.Name };
         }
 
         // GET api/values/5

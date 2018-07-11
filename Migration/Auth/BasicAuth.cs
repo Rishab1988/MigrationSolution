@@ -36,12 +36,6 @@ namespace Migration.Auth
     }
 
 
-    public class BasicAuth
-    {
-
-    }
-
-
     public class BasicAuthMiddleware : AppMiddleware
     {
         public BasicAuthMiddleware(RequestDelegate nextMiddleware) : base(nextMiddleware)
@@ -65,6 +59,7 @@ namespace Migration.Auth
                         if (string.Equals(userName, "test", StringComparison.CurrentCultureIgnoreCase) &&
                             password == "password")
                         {
+                            context.Items.Add("username", userName);
                             await NextMiddleware.Invoke(context);
                             return;
                         }
