@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,4 +31,25 @@ namespace Migration.Auth
             });
         }
     }
+
+    public class ClaimTypes2
+    {
+
+        public static string CompanyEmail => "ComapanyEmail";
+    }
+
+    public static class ClaimsPolicy
+    {
+        public static IServiceCollection AddClaimPolicies(this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.AddAuthorization(c => { c.AddPolicy("CompanyEmail", c1 =>
+                {
+                    c1.RequireClaim(ClaimTypes2.CompanyEmail);
+                });
+            });
+            return services;
+        }
+    }
+
 }

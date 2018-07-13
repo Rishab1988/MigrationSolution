@@ -40,6 +40,7 @@ namespace Migration
                 .RequireAuthenticatedUser()
                 .Build();
             JwtBearerAuth.AddAuthentication(services, Configuration);
+            services.AddClaimPolicies(Configuration);
             services.AddMvc(c => c.Filters.Add(new AuthorizeFilter(authPolicy)));
             //services.AddMvc();
             services.AddSwaggerGen(c =>

@@ -14,7 +14,7 @@ namespace Migration.Controllers
     public class NomineeController : ControllerBase
     {
         private readonly IParameterErrorRepository _parameterErrorCollection;
-        public NomineeController(IParameterErrorRepository parameterErrorCollection)
+        public NomineeController(IComponentContext componentContext, IParameterErrorRepository parameterErrorCollection)
         {
             _parameterErrorCollection = parameterErrorCollection;
         }
