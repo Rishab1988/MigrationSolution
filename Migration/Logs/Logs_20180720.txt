@@ -1,0 +1,26 @@
+INFO  20-03-2018 17:03:12 Microsoft.AspNetCore.Hosting.Internal.WebHost [9] - Request starting HTTP/1.1 DEBUG http://localhost:56186/  0 
+INFO  20-03-2018 17:03:12 Microsoft.AspNetCore.Hosting.Internal.WebHost [10] - Request starting HTTP/1.1 GET http://localhost:44314/api/values   
+INFO  20-03-2018 17:03:12 Microsoft.AspNetCore.Hosting.Internal.WebHost [9] - Request finished in 168.7671ms 200  
+INFO  20-03-2018 17:03:13 Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker [10] - Route matched with {action = "Get", controller = "Values"}. Executing action Migration.Controllers.ValuesController.Get (Migration) 
+INFO  20-03-2018 17:03:13 Microsoft.AspNetCore.Authorization.DefaultAuthorizationService [10] - Authorization failed. 
+INFO  20-03-2018 17:03:13 Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker [10] - Authorization failed for the request at filter 'Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter'. 
+INFO  20-03-2018 17:03:13 Microsoft.AspNetCore.Mvc.ChallengeResult [10] - Executing ChallengeResult with authentication schemes (Bearer). 
+INFO  20-03-2018 17:03:13 Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler [10] - AuthenticationScheme: Bearer was challenged. 
+INFO  20-03-2018 17:03:13 Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker [10] - Executed action Migration.Controllers.ValuesController.Get (Migration) in 51.7912ms 
+INFO  20-03-2018 17:03:13 Microsoft.AspNetCore.Hosting.Internal.WebHost [10] - Request finished in 1069.7239ms 401 text/plain 
+INFO  20-03-2018 17:03:17 Microsoft.AspNetCore.Hosting.Internal.WebHost [9] - Request starting HTTP/1.1 GET http://localhost:44314/swagger/index.html   
+INFO  20-03-2018 17:03:17 Microsoft.AspNetCore.Hosting.Internal.WebHost [9] - Request finished in 14.681ms 200 text/html 
+INFO  20-03-2018 17:03:18 Microsoft.AspNetCore.Hosting.Internal.WebHost [9] - Request starting HTTP/1.1 GET http://localhost:44314/swagger/v1/swagger.json   
+INFO  20-03-2018 17:03:18 Microsoft.AspNetCore.Hosting.Internal.WebHost [9] - Request finished in 166.8903ms 200 application/json;charset=utf-8 
+INFO  20-06-2018 18:06:22 Microsoft.AspNetCore.Hosting.Internal.WebHost [6] - Request starting HTTP/1.1 GET http://localhost:44314/core/api/jwtauth   
+INFO  20-06-2018 18:06:22 Microsoft.AspNetCore.Hosting.Internal.WebHost [6] - Request finished in 33.4454ms 401  
+INFO  20-07-2018 18:07:18 Microsoft.AspNetCore.Hosting.Internal.WebHost [7] - Request starting HTTP/1.1 GET http://localhost:44314/core/api/jwtauth   
+INFO  20-07-2018 18:07:18 Microsoft.AspNetCore.Hosting.Internal.WebHost [7] - Request finished in 0.6749ms 401  
+INFO  20-07-2018 18:07:20 Microsoft.AspNetCore.Hosting.Internal.WebHost [4] - Request starting HTTP/1.1 GET http://localhost:44314/core/api/jwtauth   
+INFO  20-07-2018 18:07:20 Microsoft.AspNetCore.Hosting.Internal.WebHost [4] - Request finished in 0.282ms 401  
+INFO  20-07-2018 18:07:22 Microsoft.AspNetCore.Hosting.Internal.WebHost [4] - Request starting HTTP/1.1 GET http://localhost:44314/core/api/jwtauth   
+INFO  20-07-2018 18:07:22 Microsoft.AspNetCore.Hosting.Internal.WebHost [4] - Request finished in 0.2056ms 401  
+INFO  20-07-2018 18:07:22 Microsoft.AspNetCore.Hosting.Internal.WebHost [12] - Request starting HTTP/1.1 GET http://localhost:44314/core/api/jwtauth   
+INFO  20-07-2018 18:07:22 Microsoft.AspNetCore.Hosting.Internal.WebHost [12] - Request finished in 0.3422ms 401  
+INFO  20-08-2018 18:08:08 Microsoft.AspNetCore.Hosting.Internal.WebHost [7] - Request starting HTTP/1.1 POST http://127.0.0.1:23909/iisintegration  0 
+INFO  20-08-2018 18:08:08 Microsoft.AspNetCore.Hosting.Internal.WebHost [7] - Request finished in 0.2802ms 202  

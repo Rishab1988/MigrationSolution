@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -11,7 +12,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,29 +24,49 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Migration.Auth;
 using Migration.Common;
+using Migration.Config;
 using Migration.StartupSupport.DI;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
+
+//configuration
+//view component
+// tag helper pack
 
 namespace Migration
 {
+    public class TestFilter : IDocumentFilter
+    {
+        public void Apply(SwaggerDocument swaggerDoc, DocumentFilterContext context)
+        {
+            swaggerDoc.Schemes = new string[] { "https" };
+        }
+    }
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            var authPolicy = new AuthorizationPolicyBuilder()
+            var authPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build();
             JwtBearerAuth.AddAuthentication(services, Configuration);
             services.AddClaimPolicies(Configuration);
-            services.AddMvc(c => c.Filters.Add(new AuthorizeFilter(authPolicy)));
+            services.AddMvc(c =>
+            {
+                c.Filters.Add(new AuthorizeFilter(authPolicy));
+                c.Filters.Add(new RequireHttpsAttribute());
+            }).AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix, options => { options.ResourcesPath = "Resources"; })
+                .AddDataAnnotationsLocalization();
             //services.AddMvc();
             services.AddSwaggerGen(c =>
             {
@@ -53,6 +78,8 @@ namespace Migration
                     TermsOfService = "None",
                     Contact = new Contact() { Name = "Migration Solution", Email = "x@x.com", Url = "www.x.com" }
                 });
+
+
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme { In = "header", Description = "Please enter JWT with Bearer into field", Name = "Authorization", Type = "apiKey" });
                 c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
                     { "Bearer", Enumerable.Empty<string>() },
@@ -61,26 +88,69 @@ namespace Migration
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            services.AddHsts(c => { c.IncludeSubDomains = true; });
+            services.AddHttpsRedirection(c =>
+            {
+                c.RedirectStatusCode = 301;
+                if (Environment.IsDevelopment())
+                {
+                    c.HttpsPort = 44314;
+                }
+            });
+            services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
+            services.Configure<SwaggerConfig>(Configuration.GetSection("Swagger"));
+
             #region Dependency Module Injection and builder binding
             return AutoFacContainer.GetServiceProvider(services);
             #endregion
         }
 
         // This method gets called by the runtime. Use this meth`~~od to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<SwaggerConfig> swaggerOptions)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseRequestLocalization(options =>
+            {
+                options.SupportedCultures = new List<CultureInfo>
+                {
+                   new CultureInfo("en-US"), new CultureInfo ("fr-FR")
+                };
+                options.SupportedUICultures = options.SupportedCultures;
+                options.DefaultRequestCulture = new RequestCulture("en-US");
+            });
+
+          
+
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
+            var logger = loggerFactory.CreateLogger("Middleware");
+
+            logger.LogDebug("Current Culture :" + CultureInfo.CurrentCulture.ToString());
+
+            logger.LogInformation("Middleware pipeline started");
+            //loggerFactory.AddLog4Net("log4net.config");
+            app.Use(async (c, p) =>
+            {
+                c.Response.Headers.Add("X-HostingEnvironment", env.EnvironmentName);
+                await p.Invoke();
+            });
             app.UseWhen(x => x.Request.Path.Value.IndexOf("/JwtAuth", StringComparison.OrdinalIgnoreCase) >= 0, y => y.UseMiddleware<BasicAuthMiddleware>());
             app.UseAuthentication();
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Migration Solution"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint(swaggerOptions.Value.Endpoint, "Migration Solution"));
+            app.UseStatusCodePages();
+            app.UseStaticFiles();
+            app.UseHsts();
 
+            app.UseHttpsRedirection();
+            app.UseErrorHandler();
             app.UseMvc();
-            
+
         }
     }
 }

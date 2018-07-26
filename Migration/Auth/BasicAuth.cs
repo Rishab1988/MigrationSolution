@@ -35,6 +35,7 @@ namespace Migration.Auth
         string Password { get; set; }
     }
 
+        
 
     public class BasicAuthMiddleware : AppMiddleware
     {

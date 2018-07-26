@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Migration.Common;
+using Migration.Resources;
 
 namespace Migration.Controllers
 {
@@ -14,9 +18,13 @@ namespace Migration.Controllers
     public class NomineeController : ControllerBase
     {
         private readonly IParameterErrorRepository _parameterErrorCollection;
-        public NomineeController(IComponentContext componentContext, IParameterErrorRepository parameterErrorCollection)
+        private readonly ILogger<NomineeController> _logger;
+        private readonly IStringLocalizer<NomineeController> _localizer;
+        public NomineeController(IComponentContext componentContext, IParameterErrorRepository parameterErrorCollection, ILogger<NomineeController> logger, IStringLocalizer<NomineeController> localizer)
         {
             _parameterErrorCollection = parameterErrorCollection;
+            _logger = logger;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -25,23 +33,33 @@ namespace Migration.Controllers
         /// <param name="loyaltyId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("{loyaltyId?}")]
+        //[Route("{loyaltyId?}")]
         [ProducesResponseType(typeof(IParameterErrorCollection),400)]
         [ProducesResponseType(typeof(int),200)]
-        public IActionResult Get(string loyaltyId)
+        public IActionResult Get([FromQuery]string loyaltyId)
         {
+            _logger.LogDebug($"Read {nameof(loyaltyId)} as "+loyaltyId);
+            //throw new ArgumentException("test message", nameof(loyaltyId));
             if (string.IsNullOrEmpty(loyaltyId))
             {
                 _parameterErrorCollection.Add(c =>
                     {
-                        c.Message = $"{nameof(loyaltyId)} cannot be null or empty";
+                        c.Message = _localizer.GetString(LocalizedResourceBrowser.ParameterNullorEmpty,nameof(loyaltyId));
                         c.Parameter = nameof(loyaltyId);
                     }
                 );
                 var result = new BadRequestJsonResult<IParameterErrorCollection>(_parameterErrorCollection.GetCollection());
                 return result;
             }
-            return Ok(0);
+
+            if (User.HasClaim(x => x.Type == ClaimTypes.Email))
+            {
+                var claim = User.FindFirst(ClaimTypes.Email);
+
+                return Ok(claim.Value);
+            }
+
+            return Ok(User);
         }
     }
 }

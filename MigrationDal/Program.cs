@@ -9,7 +9,6 @@ namespace MigrationDal
         
 
             var container = DependencyContainer.CreateContainer();
-
             using (var scope = container.BeginLifetimeScope())
             {
                 UnitOfWork unitOfWork = new UnitOfWork(scope);

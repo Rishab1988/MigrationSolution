@@ -14,7 +14,7 @@ namespace Migration.Auth
     public class JwtBearerAuth
     {
       public static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
-      {           
+      {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(c =>
             {
                 c.IncludeErrorDetails = true;
@@ -28,6 +28,9 @@ namespace Migration.Auth
                     ValidAudience = configuration["Jwt:Issuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                 };
+            }).AddCookie(c =>
+            {
+               
             });
         }
     }

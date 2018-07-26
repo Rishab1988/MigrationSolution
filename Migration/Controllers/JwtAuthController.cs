@@ -34,7 +34,7 @@ namespace Migration.Controllers
                     issuer: _configuration["Jwt:Issuer"],
                     audience: _configuration["Jwt:Issuer"],
                     claims: new List<Claim>
-                    {
+                    { 
                         new Claim("email", "r@google.com"),
                         new Claim(ClaimTypes.MobilePhone, "8826473129"),
                         new Claim(ClaimTypes.Name,value.ToString())

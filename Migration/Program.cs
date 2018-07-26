@@ -19,7 +19,9 @@ namespace Migration
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseApplicationInsights()
                 .UseStartup<Startup>()
+                .UseKestrel(options => { options.AddServerHeader = false; })
                 .Build();
     }
 }
