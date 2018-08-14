@@ -5,26 +5,32 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Migration.Common;
+using Migration.DAL;
 using Migration.Resources;
 
 namespace Migration.Controllers
 {
     [ProducesResponseType(401)]
     [Route("api/[controller]")]
+    [AllowAnonymous]
     public class NomineeController : ControllerBase
     {
         private readonly IParameterErrorRepository _parameterErrorCollection;
         private readonly ILogger<NomineeController> _logger;
         private readonly IStringLocalizer<NomineeController> _localizer;
-        public NomineeController(IComponentContext componentContext, IParameterErrorRepository parameterErrorCollection, ILogger<NomineeController> logger, IStringLocalizer<NomineeController> localizer)
+        private readonly IOptions<DbConString> _dbConString;
+        public NomineeController(IComponentContext componentContext, IParameterErrorRepository parameterErrorCollection, ILogger<NomineeController> logger, IStringLocalizer<NomineeController> localizer, IOptions<DbConString> dbConString)
         {
             _parameterErrorCollection = parameterErrorCollection;
             _logger = logger;
             _localizer = localizer;
+            _dbConString = dbConString;
         }
 
         /// <summary>
@@ -38,6 +44,9 @@ namespace Migration.Controllers
         [ProducesResponseType(typeof(int),200)]
         public IActionResult Get([FromQuery]string loyaltyId)
         {
+            UserRepository userRepository = new UserRepository(_dbConString);
+            userRepository.GetUsers();
+
             _logger.LogDebug($"Read {nameof(loyaltyId)} as "+loyaltyId);
             //throw new ArgumentException("test message", nameof(loyaltyId));
             if (string.IsNullOrEmpty(loyaltyId))

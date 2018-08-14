@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Migration.DAL;
 
 namespace Migration.Controllers
 {
@@ -16,7 +17,6 @@ namespace Migration.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-         
             var user = HttpContext.User;
             var value = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.MobilePhone);
             if (value != null)

@@ -15,6 +15,5 @@ namespace Migration.StartupSupport.DI
             var container = builder.Build();
             return new AutofacServiceProvider(container);
         }
-
     }
 }
